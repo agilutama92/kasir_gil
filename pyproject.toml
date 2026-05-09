@@ -1,12 +1,13 @@
 [project]
 name = "kasir"
 version = "1.0.0"
-description = "Kasir App by Agil"
+description = "Official Kasir App by Agil"
+authors = [{name = "Agil"}]
 dependencies = ["flet"]
 
 [tool.flet]
 org_name = "com.agil"
-product_name = "Kasir" 
+product_name = "Kasir"
 project_name = "kasir"
 
 [tool.flet.app]
