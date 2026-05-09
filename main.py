@@ -8,19 +8,16 @@ def main(page: ft.Page):
     page.padding = ft.padding.symmetric(horizontal=15, vertical=10)
     page.scroll = ft.ScrollMode.AUTO
 
-    # STATE
     cart_items = []
     
-    # KOMPONEN INPUT
     item_name = ft.TextField(label="Item Name", border_radius=8, border_color=ft.colors.BLACK)
     price = ft.TextField(label="Price", border_radius=8, border_color=ft.colors.BLACK, keyboard_type=ft.KeyboardType.NUMBER)
     qty = ft.TextField(label="Qty", border_radius=8, border_color=ft.colors.BLACK, keyboard_type=ft.KeyboardType.NUMBER)
     discount = ft.TextField(label="Discount %", value="0", border_radius=8, border_color=ft.colors.BLACK, keyboard_type=ft.KeyboardType.NUMBER)
     
-    cart_list = ft.Column(scroll=ft.ScrollMode.AUTO, height=150)
+    cart_list = ft.ListView(expand=False, height=160, spacing=5)
     total_text = ft.Text("TOTAL: Rp 0", size=20, weight=ft.FontWeight.BOLD)
 
-    # FOOTER
     footer = ft.Container(
         content=ft.Column([
             ft.Text("©2026 Developed By:", size=11, color=ft.colors.GREY_500),
@@ -35,24 +32,27 @@ def main(page: ft.Page):
     def update_cart():
         cart_list.controls.clear()
         total = 0
-        for item in cart_items:
-            subtotal = item = 0
+        for idx, item in enumerate(cart_items):
+            # INI YG BENER GIL
+            subtotal = item * item  # price * qty
+            total += subtotal
             cart_list.controls.append(
                 ft.Container(
                     content=ft.Row([
                         ft.Text(f"{item}", expand=True),
-                        ft.Text(f"{item} x Rp {item:,}"),
+                        ft.Text(f"{item}x Rp {item:,}"),
+                        ft.Text(f"= Rp {subtotal:,}", weight=ft.FontWeight.BOLD),
                         ft.IconButton(
                             icon=ft.icons.DELETE_OUTLINE, 
                             icon_color=ft.colors.RED_400,
-                            on_click=lambda e, i=item: remove_item(i)
+                            icon_size=20,
+                            on_click=lambda e, index=idx: remove_item(index)
                         )
-                    ]),
-                    padding=5,
-                    border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200))
+                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                    padding=ft.padding.symmetric(vertical=8, horizontal=5),
+                    border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_300))
                 )
             )
-            total += subtotal
         
         disc = float(discount.value) if discount.value else 0
         total_setelah_disc = total - (total * disc / 100)
@@ -77,20 +77,18 @@ def main(page: ft.Page):
             page.show_snack_bar(ft.SnackBar(ft.Text("Lengkapi semua field"), open=True))
         page.update()
 
-    def remove_item(item):
-        cart_items.remove(item)
+    def remove_item(index):
+        cart_items.pop(index)
         update_cart()
 
     def calculate_click(e):
         update_cart()
-        page.show_snack_bar(ft.SnackBar(ft.Text("Total dihitung ulang"), open=True))
 
     def clear_all_click(e):
         cart_items.clear()
         discount.value = "0"
         update_cart()
 
-    # LAYOUT UTAMA
     page.add(
         ft.Column([
             ft.Text("Kasir", size=32, weight=ft.FontWeight.W_500),
@@ -104,10 +102,7 @@ def main(page: ft.Page):
             ft.Container(height=15),
             
             ft.FilledButton(
-                content=ft.Row([
-                    ft.Icon(ft.icons.ADD),
-                    ft.Text("Add Item")
-                ], alignment=ft.MainAxisAlignment.CENTER),
+                content=ft.Row([ft.Icon(ft.icons.ADD), ft.Text("Add Item")], alignment=ft.MainAxisAlignment.CENTER),
                 on_click=add_item_click,
                 style=ft.ButtonStyle(
                     bgcolor=ft.colors.BLUE_50,
@@ -125,7 +120,6 @@ def main(page: ft.Page):
                 border=ft.border.all(1, ft.colors.BLACK),
                 border_radius=8,
                 padding=10,
-                height=160
             ),
             
             ft.Divider(height=20),
@@ -133,10 +127,7 @@ def main(page: ft.Page):
             ft.Container(height=15),
             
             ft.FilledButton(
-                content=ft.Row([
-                    ft.Icon(ft.icons.CALCULATE),
-                    ft.Text("Calculate")
-                ], alignment=ft.MainAxisAlignment.CENTER),
+                content=ft.Row([ft.Icon(ft.icons.CALCULATE), ft.Text("Calculate")], alignment=ft.MainAxisAlignment.CENTER),
                 on_click=calculate_click,
                 style=ft.ButtonStyle(
                     bgcolor=ft.colors.BLUE_50,
@@ -152,10 +143,7 @@ def main(page: ft.Page):
             ft.Container(height=15),
             
             ft.FilledButton(
-                content=ft.Row([
-                    ft.Icon(ft.icons.DELETE_SWEEP),
-                    ft.Text("Clear All")
-                ], alignment=ft.MainAxisAlignment.CENTER),
+                content=ft.Row([ft.Icon(ft.icons.DELETE_SWEEP), ft.Text("Clear All")], alignment=ft.MainAxisAlignment.CENTER),
                 on_click=clear_all_click,
                 style=ft.ButtonStyle(
                     bgcolor=ft.colors.RED_500,
@@ -166,7 +154,7 @@ def main(page: ft.Page):
                 height=45
             ),
             
-            footer  # ← FOOTER "Developed By: Agil" DI SINI
+            footer
         ])
     )
 
