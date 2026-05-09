@@ -1,97 +1,97 @@
 import flet as ft
 
 def main(page: ft.Page):
-    page.title = "Kasir"
+    page.title = "Aplikasi Kasir"
+    page.window_width = 400
+    page.window_height = 700
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.theme_mode = ft.ThemeMode.LIGHT
 
+    # DATABASE USER LU
     users = {
-        "admin": {"password": "admin123", "role": "admin"},
-        "kasir": {"password": "kasir123", "role": "kasir"}
+        "admin": "admin123",
+        "kasir": "kasir123"
     }
-    current_user = {"role": None}
 
-    def toggle_theme(e):
-        page.theme_mode = ft.ThemeMode.DARK if page.theme_mode == ft.ThemeMode.LIGHT else ft.ThemeMode.LIGHT
-        page.update()
+    # KOMPONEN LOGIN
+    username_field = ft.TextField(
+        label="Username",
+        width=300,
+        autofocus=True,
+        prefix_icon=ft.icons.PERSON
+    )
+    password_field = ft.TextField(
+        label="Password",
+        password=True,
+        can_reveal_password=True,
+        width=300,
+        prefix_icon=ft.icons.LOCK
+    )
+    error_text = ft.Text("", color=ft.colors.RED_500)
 
-    def show_snack(msg):
-        page.snack_bar = ft.SnackBar(ft.Text(msg))
-        page.snack_bar.open = True
-        page.update()
-
-    def logout(e):
-        current_user["role"] = None
+    def masuk_dashboard(user):
         page.clean()
-        login_view()
-
-    def admin_view():
-        page.appbar = ft.AppBar(
-            title=ft.Text("Dashboard Admin"),
-            bgcolor=ft.colors.BLUE,
-            actions=[
-                ft.IconButton(ft.icons.BRIGHTNESS_6, on_click=toggle_theme),
-                ft.IconButton(ft.icons.LOGOUT, on_click=logout)
-            ]
-        )
         page.add(
             ft.Column([
-                ft.Text("Login sebagai: Admin", size=20, weight=ft.FontWeight.BOLD),
-                ft.ElevatedButton("Kelola Produk", icon=ft.icons.INVENTORY),
-                ft.ElevatedButton("Laporan Penjualan", icon=ft.icons.BAR_CHART),
-                ft.ElevatedButton("Kelola User", icon=ft.icons.PEOPLE),
-            ], spacing=20)
+                ft.Icon(ft.icons.CHECK_CIRCLE, size=100, color=ft.colors.GREEN),
+                ft.Text(f"Selamat Datang, {user.upper()}!", size=28, weight=ft.FontWeight.BOLD),
+                ft.Text("Aplikasi Kasir by Agil", size=16, color=ft.colors.BLUE_700),
+                ft.ElevatedButton(
+                    "Logout",
+                    icon=ft.icons.LOGOUT,
+                    on_click=lambda e: page.go("/"),
+                    bgcolor=ft.colors.RED_400,
+                    color=ft.colors.WHITE
+                )
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=30)
         )
         page.update()
 
-    def kasir_view():
-        page.appbar = ft.AppBar(
-            title=ft.Text("Kasir"),
-            bgcolor=ft.colors.GREEN,
-            actions=[
-                ft.IconButton(ft.icons.BRIGHTNESS_6, on_click=toggle_theme),
-                ft.IconButton(ft.icons.LOGOUT, on_click=logout)
-            ]
-        )
-        page.add(
-            ft.Column([
-                ft.Text("Login sebagai: Kasir", size=20, weight=ft.FontWeight.BOLD),
-                ft.ElevatedButton("Transaksi Baru", icon=ft.icons.ADD_SHOPPING_CART),
-                ft.ElevatedButton("Riwayat Transaksi", icon=ft.icons.HISTORY),
-            ], spacing=20)
-        )
-        page.update()
+    def login_click(e):
+        user = username_field.value.strip()
+        pw = password_field.value.strip()
 
-    def login(e):
-        user = username.value
-        pwd = password.value
-        # INI YG BENER: users["password"] -> users["password"]
-        if user in users and users["password"] == pwd:
-            current_user["role"] = users["role"]
-            page.clean()
-            if current_user["role"] == "admin":
-                admin_view()
-            else:
-                kasir_view()
+        if user in users and users[user] == pw:
+            masuk_dashboard(user)
         else:
-            show_snack("Username / Password salah!")
+            error_text.value = "Username atau password salah!"
+            page.update()
 
-    username = ft.TextField(label="Username", autofocus=True)
-    password = ft.TextField(label="Password", password=True, can_reveal_password=True, on_submit=login)
+    # TAMPILAN LOGIN
+    login_view = ft.Column([
+        ft.Icon(ft.icons.STORE, size=80, color=ft.colors.BLUE_600),
+        ft.Text("Aplikasi Kasir", size=32, weight=ft.FontWeight.BOLD),
+        username_field,
+        password_field,
+        error_text,
+        ft.ElevatedButton(
+            "Login",
+            icon=ft.icons.LOGIN,
+            on_click=login_click,
+            width=300,
+            height=50,
+            style=ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(radius=10),
+                bgcolor=ft.colors.BLUE_600,
+                color=ft.colors.WHITE
+            )
+        ),
+        ft.Text("Lisensi by Agil yg Keren 🔥", size=12, color=ft.colors.GREY_500)
+    ],
+    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+    spacing=20)
 
-    def login_view():
-        page.appbar = ft.AppBar(title=ft.Text("Login Kasir"), bgcolor=ft.colors.BLUE_GREY)
-        page.add(
-            ft.Column([
-                ft.Icon(ft.icons.STORE, size=80, color=ft.colors.BLUE),
-                ft.Text("Aplikasi Kasir", size=32, weight=ft.FontWeight.BOLD),
-                username,
-                password,
-                ft.ElevatedButton("Login", icon=ft.icons.LOGIN, on_click=login, width=300),
-                ft.Text("admin/admin123 | kasir/kasir123", size=10, color=ft.colors.GREY)
-            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=20)
+    def route_change(route):
+        page.views.clear()
+        page.views.append(
+            ft.View("/", [login_view])
         )
         page.update()
 
-    login_view()
+    page.on_route_change = route_change
+    page.go("/")
 
 ft.app(target=main)
