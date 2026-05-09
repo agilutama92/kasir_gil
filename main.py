@@ -8,12 +8,10 @@ def main(page: ft.Page):
     page.padding = ft.padding.symmetric(horizontal=15, vertical=10)
     page.scroll = ft.ScrollMode.AUTO
 
-    # STATE
     keranjang = []
     barang_terakhir_dihapus = [None]
     BATAS_DISKON = 100000
 
-    # KOMPONEN INPUT
     nama_barang = ft.TextField(label="Item Name", border_radius=8, border_color=ft.colors.BLACK)
     harga = ft.TextField(label="Price", border_radius=8, border_color=ft.colors.BLACK, keyboard_type=ft.KeyboardType.NUMBER)
     jumlah = ft.TextField(label="Qty", border_radius=8, border_color=ft.colors.BLACK, keyboard_type=ft.KeyboardType.NUMBER)
@@ -25,7 +23,6 @@ def main(page: ft.Page):
 
     struk_container = ft.Container(visible=False)
 
-    # FOOTER
     footer = ft.Container(
         content=ft.Column([
             ft.Text("©2026 Developed By:", size=11, color=ft.colors.GREY_500),
@@ -57,13 +54,13 @@ def main(page: ft.Page):
             cart_list.controls.append(ft.Text("Keranjang masih kosong", italic=True, color=ft.colors.GREY))
         else:
             for idx, item in enumerate(keranjang):
-                total_belanja += item["subtotal"]
+                total_belanja += item['subtotal'] # ← BENERIN QUOTE JADI PETIK 1
                 cart_list.controls.append(
                     ft.Container(
                         content=ft.Row([
-                            ft.Text(f"{idx+1}. {item['nama']}", expand=2),
-                            ft.Text(f"{item['jumlah']}x", expand=1),
-                            ft.Text(f"Rp {item['subtotal']:,}", expand=2, text_align=ft.TextAlign.RIGHT),
+                            ft.Text(f"{idx+1}. {item['nama']}", expand=2), # ← PETIK 1
+                            ft.Text(f"{item['jumlah']}x", expand=1), # ← PETIK 1
+                            ft.Text(f"Rp {item['subtotal']:,}", expand=2, text_align=ft.TextAlign.RIGHT), # ← PETIK 1
                             ft.IconButton(
                                 icon=ft.icons.DELETE_OUTLINE,
                                 icon_color=ft.colors.RED_400,
@@ -77,7 +74,6 @@ def main(page: ft.Page):
                     )
                 )
 
-        # HITUNG DISKON
         total_akhir, diskon_rp, persen_diskon = hitung_diskon(total_belanja)
         total_text.value = f"TOTAL: Rp {int(total_akhir):,}"
         page.update()
@@ -102,7 +98,6 @@ def main(page: ft.Page):
     def add_item_click(e):
         error_text.value = ""
 
-        # VALIDASI NAMA
         nama = nama_barang.value.strip().title()
         if not nama:
             show_error("Error! Nama barang kosong")
@@ -111,7 +106,6 @@ def main(page: ft.Page):
             show_error("Error! Isi nama yang sesuai")
             return
 
-        # VALIDASI ANGKA
         harga_val, err1 = input_angka(harga.value)
         if err1:
             show_error(f"Harga: {err1}")
@@ -122,7 +116,6 @@ def main(page: ft.Page):
             show_error(f"Jumlah: {err2}")
             return
 
-        # MASUKIN KE KERANJANG
         subtotal = harga_val * jumlah_val
         keranjang.append({
             "nama": nama,
@@ -131,7 +124,6 @@ def main(page: ft.Page):
             "subtotal": subtotal
         })
 
-        # CLEAR FIELD
         nama_barang.value = ""
         harga.value = ""
         jumlah.value = ""
@@ -173,7 +165,6 @@ def main(page: ft.Page):
 
         total_belanja, total_akhir, diskon_rp, persen_diskon = update_cart()
 
-        # BIKIN STRUK
         struk_content = [
             ft.Text("="*38, font_family="monospace"),
             ft.Text("STRUK BELANJA V14".center(38), font_family="monospace", weight=ft.FontWeight.BOLD),
@@ -181,9 +172,9 @@ def main(page: ft.Page):
         ]
 
         for item in keranjang:
-            nama = item["nama"][:15]
+            nama = item['nama'][:15] # ← PETIK 1
             struk_content.append(
-                ft.Text(f"{nama:<18} {item['jumlah']:>2} : Rp {item['subtotal']:>9,.0f}", font_family="monospace")
+                ft.Text(f"{nama:<18} {item['jumlah']:>2} : Rp {item['subtotal']:>9,.0f}", font_family="monospace") # ← PETIK 1
             )
 
         struk_content.append(ft.Text("-"*38, font_family="monospace"))
@@ -217,7 +208,6 @@ def main(page: ft.Page):
         error_text.value = ""
         update_cart()
 
-    # LAYOUT
     page.add(
         ft.Column([
             ft.Text("Kasir", size=32, weight=ft.FontWeight.W_500),
@@ -225,9 +215,9 @@ def main(page: ft.Page):
 
             nama_barang,
             ft.Container(height=10),
-            price,
+            harga,
             ft.Container(height=10),
-            qty,
+            jumlah,
             ft.Container(height=5),
             error_text,
             ft.Container(height=10),
@@ -255,7 +245,7 @@ def main(page: ft.Page):
             ft.Divider(height=20),
             ft.Text("Diskon hanya berlaku jika total > Rp 100,000", size=11, color=ft.colors.GREY, italic=True),
             ft.Container(height=5),
-            discount,
+            diskon_persen,
             ft.Container(height=15),
 
             ft.FilledButton(
