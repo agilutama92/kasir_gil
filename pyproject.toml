@@ -1,11 +1,17 @@
 [project]
 name = "kasir"
 version = "1.0.0"
-dependencies = ["flet==0.21.2"]
+dependencies = [
+    "flet==0.21.2",
+]
 
 [tool.flet]
-org_name = "com.agil.official"
-product_name = "Kasir"
-project_name = "kasir"
-assets_dir = "assets"
-icons = "icon.png"
+org = "com.gil.kasir"
+product = "Kasir"
+company = "Agil"
+
+[tool.flet.app]
+path = "main.py"
+
+[tool.flet.build.android]
+flutter_version = "3.22.2"
