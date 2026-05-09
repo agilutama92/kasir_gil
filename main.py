@@ -1,20 +1,23 @@
 import flet as ft
 
 def main(page: ft.Page):
-    page.title = "Kasir Gil V14"
+    page.title = "Kasir"
     page.scroll = "auto"
+    page.theme_mode = "light"
     
     keranjang = []
     
-    nama_input = ft.TextField(label="Nama Barang", width=300)
-    harga_input = ft.TextField(label="Harga") 
-    jumlah_input = ft.TextField(label="Jumlah")
-    diskon_input = ft.TextField(label="Diskon %", value="0")
+    # === KOMPONEN ===
+    nama_input = ft.TextField(label="Item Name", width=300, autofocus=True)
+    harga_input = ft.TextField(label="Price") 
+    jumlah_input = ft.TextField(label="Qty")
+    diskon_input = ft.TextField(label="Discount %", value="0")
     
-    list_keranjang = ft.Column()
-    total_text = ft.Text("TOTAL: Rp 0", size=22, weight="bold")
+    list_keranjang = ft.Column(scroll="auto")
+    total_text = ft.Text("TOTAL: Rp 0", size=24, weight="bold")
     error_text = ft.Text("", color="red")
 
+    # === FUNGSI ===
     def update_ui():
         list_keranjang.controls.clear()
         total = 0
@@ -23,7 +26,7 @@ def main(page: ft.Page):
             list_keranjang.controls.append(
                 ft.Row([
                     ft.Text(f"{item['nama']} x{item['jumlah']} = Rp {item['subtotal']:,}", expand=True),
-                    ft.IconButton(icon="delete", on_click=lambda _, idx=i: hapus_barang(idx))
+                    ft.IconButton(icon="delete", icon_color="red400", on_click=lambda _, idx=i: hapus_barang(idx))
                 ])
             )
         
@@ -48,7 +51,7 @@ def main(page: ft.Page):
             if not nama or harga <= 0 or jumlah <= 0:
                 raise ValueError
         except:
-            error_text.value = "Isi nama, harga, jumlah yg bener!"
+            error_text.value = "Please enter valid item, price, and qty!"
             page.update()
             return
             
@@ -61,26 +64,43 @@ def main(page: ft.Page):
         nama_input.value = ""
         harga_input.value = ""
         jumlah_input.value = ""
+        nama_input.focus()
         update_ui()
 
     def hapus_barang(idx):
         keranjang.pop(idx)
         update_ui()
 
+    def reset_keranjang(e):
+        keranjang.clear()
+        diskon_input.value = "0"
+        update_ui()
+
+    # === TAMPILAN ===
     page.add(
         ft.Column([
-            ft.Text("KASIR GIL V14 🔥", size=28, weight="bold"),
+            ft.Text("Kasir", size=30, weight="bold"),
             nama_input,
             ft.Row([harga_input, jumlah_input]),
-            ft.ElevatedButton("Tambah Barang", on_click=tambah_barang),
+            ft.ElevatedButton("Add Item", icon="add", on_click=tambah_barang),
             error_text,
             ft.Divider(),
-            ft.Text("Keranjang:", size=18),
-            list_keranjang,
+            ft.Text("Cart:", size=18, weight="w500"),
+            ft.Container(content=list_keranjang, height=200, border=ft.border.all(1, "grey300"), padding=10),
             ft.Divider(),
-            ft.Row([diskon_input, ft.ElevatedButton("Hitung", on_click=lambda e: update_ui())]),
+            ft.Row([diskon_input, ft.ElevatedButton("Calculate", icon="calculate", on_click=lambda e: update_ui())]),
             total_text,
-        ], spacing=10)
+            ft.ElevatedButton(
+                "Clear All", 
+                icon="delete_sweep", 
+                bgcolor="red", 
+                color="white",
+                on_click=reset_keranjang
+            ),
+            ft.Container(height=20),
+            ft.Text("Licensed to Agil © 2026", size=10, color="grey", opacity=0.6),
+            ft.Text("All Rights Reserved", size=10, color="grey", opacity=0.6),
+        ], spacing=12, width=400, horizontal_alignment="center")
     )
 
 ft.app(target=main)
