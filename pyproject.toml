@@ -1,14 +1,12 @@
 [project]
 name = "kasir"
 version = "1.0.0"
-dependencies = [
-    "flet==0.21.2",
-]
+dependencies = ["flet==0.21.2"]
 
 [tool.flet]
 org = "com.gil.kasir"
 product = "Kasir"
-company = "Agil"
+company = "Gil"
 
 [tool.flet.app]
 path = "main.py"
