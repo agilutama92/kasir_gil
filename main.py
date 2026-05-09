@@ -8,12 +8,12 @@ def main(page: ft.Page):
     page.padding = 0
 
     users = {
-        "admin": "admin123",
+        "admin": "admin123", 
         "kasir": "kasir123"
     }
-
-    current_user = [""] # list biar mutable
-
+    
+    current_user = [""]
+    
     footer = ft.Container(
         content=ft.Column([
             ft.Text("©2026 Developed By:", size=11, color=ft.colors.GREY_500),
@@ -42,7 +42,7 @@ def main(page: ft.Page):
     error_text = ft.Text("", color=ft.colors.RED_500)
 
     def logout_click(e):
-        current_user[0] = "" # ubah index 0
+        current_user = ""
         page.go("/")
 
     def halaman_dashboard():
@@ -54,7 +54,7 @@ def main(page: ft.Page):
                     ft.Container(
                         content=ft.Column([
                             ft.Icon(ft.icons.INVENTORY_2, size=60, color=ft.colors.BLUE_600),
-                            ft.Text(f"Halo, {current_user[0].upper()}", size=24, weight=ft.FontWeight.BOLD), # pake [0]
+                            ft.Text(f"Halo, {current_user.upper()}", size=24, weight=ft.FontWeight.BOLD),
                             ft.Divider(),
                             ft.Text("Fitur Input Barang", size=18),
                             ft.ElevatedButton("Tambah Barang Baru", icon=ft.icons.ADD_BOX, width=300, height=45),
@@ -112,9 +112,9 @@ def main(page: ft.Page):
         user = username_field.value.strip()
         pw = password_field.value.strip()
 
-        # FIX 1: Bandingin users sama pw
-        if user in users and users == pw:
-            current_user[0] = user # FIX 2: assign ke index 0
+        # INI SATU-SATUNYA BARIS YG BIKIN ERROR DARI AWAL GIL
+        if user in users and users == pw:  # ← FIX: users == pw
+            current_user = user
             error_text.value = ""
             page.go("/dashboard")
             username_field.value = ""
