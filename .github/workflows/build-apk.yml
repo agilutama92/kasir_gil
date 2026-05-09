@@ -1,4 +1,4 @@
-name: Build Kasir Gil APK
+name: Build Kasir APK
 
 on:
   push:
