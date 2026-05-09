@@ -6,7 +6,7 @@ authors = [{name = "Agil"}]
 dependencies = ["flet"]
 
 [tool.flet]
-org_name = "com.agil"
+org_name = "com.agil.kasir"
 product_name = "Kasir"
 project_name = "kasir"
 
