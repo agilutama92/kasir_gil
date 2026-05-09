@@ -64,6 +64,7 @@ def main(page: ft.Page):
     def login(e):
         user = username.value
         pwd = password.value
+        # INI YG BENER: users[user]["password"]
         if user in users and users[user]["password"] == pwd:
             current_user["role"] = users[user]["role"]
             page.clean()
