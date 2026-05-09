@@ -1,15 +1,11 @@
 [project]
 name = "kasir"
-version = "1.0.1"
-description = "Official Kasir App by Agil"
-authors = [{name = "Agil"}]
-dependencies = ["flet"]
+version = "1.0.0"
+dependencies = ["flet==0.21.2"]
 
 [tool.flet]
-org_name = "com.agil.kasirv3"
+org_name = "com.agil.official"
 product_name = "Kasir"
 project_name = "kasir"
-
-[tool.flet.app]
 assets_dir = "assets"
-icon = "assets/icon.png"
+icons = "icon.png"
