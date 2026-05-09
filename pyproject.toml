@@ -1,0 +1,10 @@
+[project]
+name = "kasir_gil"
+version = "1.0.0"
+dependencies = [
+    "flet==0.21.2",
+]
+
+[tool.flet]
+project = "Kasir Gil"
+org = "com.gil.kasir"
